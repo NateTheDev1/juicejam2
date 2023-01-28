@@ -28,4 +28,6 @@ protected:
 	UTextBlock* InputText;
 public:
 	void AddMessage(const FText& Message);
+
+	virtual void NativeConstruct() override;
 };

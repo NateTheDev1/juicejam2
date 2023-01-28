@@ -24,6 +24,13 @@ void UTerminalUIWidget::AddMessage(const FText& Message)
 	}
 }
 
+void UTerminalUIWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	// Reset to default.
+	InputText->SetText(FText::FromString(""));
+}
+
 void UTerminalUIWidget::SetTextAfterDelay(UTextBlock* TextBlock, wchar_t Character, FTimerHandle TimerHandle)
 {
 	if(SetTextTimerHandle.IsValid())

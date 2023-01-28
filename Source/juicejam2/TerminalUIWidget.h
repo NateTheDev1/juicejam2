@@ -16,10 +16,6 @@ class JUICEJAM2_API UTerminalUIWidget : public UUserWidget
 protected:
 	// UPROPERTY(EditAnywhere, Category="Config")
 	// FSlateFontInfo MessageTextFont;
-
-	FTimerHandle SetTextTimerHandle;
-
-	void SetTextAfterDelay(UTextBlock *TextBlock, wchar_t Character, FTimerHandle TimerHandle);
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UScrollBox* MessageBox;
@@ -27,7 +23,29 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* InputText;
 public:
-	void AddMessage(const FText& Message);
+	void AddMessage(const FText& Message, bool bCallbackUsePrompt, int32 CallbackInstanceID);
+
+	void PromptResponse(int32 InstanceID);
 
 	virtual void NativeConstruct() override;
+
+	void DisplayNextLetter();
+
+	bool bIsTransmittingMessage = false;
+	
+private:
+	FString CurrentString;
+	int32 CurrentIndex;
+	FText CurrentMessage;
+	float CharDelay = 0.02f;
+	int32 StringLength;
+
+	bool bUsePromptCallback = false;
+
+	int32 PromptCallbackInstanceID = 0;
+	
+	UPROPERTY()
+	UTextBlock* CurrentTextBlock;
+	
+	FTimerHandle TimerHandle;
 };

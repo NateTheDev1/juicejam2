@@ -23,7 +23,8 @@ void Ajuicejam2GameModeBase::BeginPlay()
 
 			if(MessageConstants.Messages.Num() > 0)
 			{
-				TerminalUIWidget->AddMessage(FText::FromString(MessageConstants.Messages[0]));
+				TerminalUIWidget->AddMessage(FText::FromString(MessageConstants.Messages[CurrentMessageIndex]), true, 0);
+				CurrentMessageIndex++;
 			}
 		}
 	}

@@ -3,24 +3,47 @@
 
 #include "TerminalUIWidget.h"
 
-void UTerminalUIWidget::AddMessage(const FText& Message)
+#include "PlayerPawn.h"
+#include "Kismet/GameplayStatics.h"
+
+void UTerminalUIWidget::AddMessage(const FText& Message, bool bCallbackUsePrompt, int32 CallbackInstanceID)
 {
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	if(PlayerPawn)
+	{
+		PlayerPawn->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	}
+	
+	bUsePromptCallback = bCallbackUsePrompt;
+	PromptCallbackInstanceID = CallbackInstanceID;
+	
+	bIsTransmittingMessage = true;
 	// Create a new text block
 	UTextBlock* TextBlock = NewObject<UTextBlock>(this, UTextBlock::StaticClass());
 	// TextBlock->SetFont(MessageTextFont);
 	MessageBox->AddChild(TextBlock);
 	TextBlock->SetRenderScale(FVector2d(1,-1));
+	TextBlock->SetAutoWrapText(true);
 
-	float AppendingTime = 0;
-	
-	for(auto Character : Message.ToString())
+	CurrentTextBlock = TextBlock;
+
+	StringLength = Message.ToString().Len();
+	CurrentIndex = 0;
+	CurrentString = "";
+	CurrentMessage = Message;
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UTerminalUIWidget::DisplayNextLetter, CharDelay, false);
+
+}
+
+void UTerminalUIWidget::PromptResponse(int32 InstanceID)
+{
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	if(PlayerPawn)
 	{
-		AppendingTime += 0.05f;
-		FTimerHandle TimerHandle = FTimerHandle();
-		
-		FTimerDelegate SetTextAfterDelayDelegate = FTimerDelegate::CreateUObject(this, &UTerminalUIWidget::SetTextAfterDelay, TextBlock, Character, TimerHandle);
-
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, SetTextAfterDelayDelegate, 0.05f + AppendingTime, false);
+		PlayerPawn->EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	}
 }
 
@@ -31,17 +54,43 @@ void UTerminalUIWidget::NativeConstruct()
 	InputText->SetText(FText::FromString(""));
 }
 
-void UTerminalUIWidget::SetTextAfterDelay(UTextBlock* TextBlock, wchar_t Character, FTimerHandle TimerHandle)
+void UTerminalUIWidget::DisplayNextLetter()
 {
-	if(SetTextTimerHandle.IsValid())
+	CurrentString.AppendChar(CurrentMessage.ToString()[CurrentIndex]);
+	CurrentTextBlock->SetText(FText::FromString(CurrentString));
+
+	CurrentIndex++;
+
+	if(CurrentIndex >= StringLength)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(SetTextTimerHandle);
+		bIsTransmittingMessage = false;
+
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+
+		if(bUsePromptCallback)
+		{
+			PromptResponse(PromptCallbackInstanceID);
+		}
+		
+		return;
+	}
+
+	float Delay = CharDelay;
+	if (CurrentMessage.ToString()[CurrentIndex - 1] == '.' || CurrentMessage.ToString()[CurrentIndex - 1] == '!' || CurrentMessage.ToString()[CurrentIndex - 1] == '?') {
+		Delay += 1.f;
 	}
 	
-	FText CurrentText = TextBlock->GetText();
-
-	FString NewLetter = FString::Chr(Character);
-	
-	FString NewText = FString::Format(TEXT("{0}{1}"), {CurrentText.ToString(), NewLetter});
-	TextBlock->SetText(FText::FromString(NewText));
+	if (CurrentIndex < StringLength)
+	{
+		// Set the timer to call this function again with the next letter
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UTerminalUIWidget::DisplayNextLetter, Delay, false);
+	} else
+	{
+		bIsTransmittingMessage = false;
+		
+		if(bUsePromptCallback)
+		{
+			PromptResponse(PromptCallbackInstanceID);
+		}
+	}
 }

@@ -30,6 +30,8 @@ public:
 
 protected:
 	FMessageConstants MessageConstants;
+
+	int32 CurrentMessageIndex = 0;
 	
 	void InitializeMessageConstants();
 	

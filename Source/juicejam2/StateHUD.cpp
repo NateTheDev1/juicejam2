@@ -3,10 +3,14 @@
 
 #include "StateHUD.h"
 
+#include "Kismet/GameplayStatics.h"
+
 void UStateHUD::SetElectricityLevel(float NewLevel)
 {
 	ElectricityLevel = NewLevel;
 	ElectricityBar->SetPercent(ElectricityLevel);
+
+	UGameplayStatics::PlaySound2D(GetWorld(), PowerDownSound, 0.5f, 1.0f, 0.0f);
 	
 	PlayAnimation(ElectricShakeAnim, 0, 5);
 }

@@ -6,6 +6,7 @@
 #include "juicejam2GameModeBase.h"
 #include "PlayerPawn.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/AudioComponent.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/ScrollBoxSlot.h"
 #include "Kismet/GameplayStatics.h"
@@ -128,6 +129,15 @@ void UTerminalUIWidget::AddMessage(const FText& Message, bool bCallbackUsePrompt
 	CurrentString = "";
 	CurrentMessage = Message;
 
+	if(MessageTransmissionSound && !AudioComponent)
+	{
+		AudioComponent = UGameplayStatics::SpawnSound2D(GetWorld(), MessageTransmissionSound, 1.f, 1.f, 0.f);
+		AudioComponent->Play();
+	} else if(MessageTransmissionSound)
+	{
+		AudioComponent->Play(0.f);
+	}
+
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UTerminalUIWidget::DisplayNextLetter, CharDelay, false);
 }
 
@@ -202,6 +212,12 @@ void UTerminalUIWidget::DisplayNextLetter()
 		if(bRequiresReponse)
 		{
 			PromptResponse(PromptCallbackInstanceID);
+
+			if(AudioComponent)
+			{
+				AudioComponent->Stop();
+			}
+			
 			return;
 		}
 
@@ -225,6 +241,11 @@ void UTerminalUIWidget::DisplayNextLetter()
 	} else
 	{
 		bIsTransmittingMessage = false;
+
+		if(AudioComponent)
+		{
+			AudioComponent->Stop();
+		}
 		
 		if(bUsePromptCallback && bRequiresReponse)
 		{

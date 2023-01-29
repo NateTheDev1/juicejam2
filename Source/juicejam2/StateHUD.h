@@ -15,6 +15,9 @@ class JUICEJAM2_API UStateHUD : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, Category="Config")
+	USoundBase* PowerDownSound;
+	
 	UPROPERTY( Transient, meta = ( BindWidgetAnim ) )
 	UWidgetAnimation *ElectricShakeAnim;
 

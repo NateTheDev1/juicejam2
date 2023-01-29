@@ -23,6 +23,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UScrollBox* MessageBox;
 public:
+	UPROPERTY(EditAnywhere, Category="Config")
+	USoundBase* MessageTransmissionSound;
+	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* InputText;
 
@@ -69,6 +72,9 @@ private:
 	UTextBlock* CurrentTextBlock;
 	
 	FTimerHandle TimerHandle;
+
+	UPROPERTY()
+	UAudioComponent* AudioComponent;
 
 	void OnCountdownTimer();
 };

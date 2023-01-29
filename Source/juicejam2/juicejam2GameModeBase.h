@@ -41,6 +41,9 @@ class JUICEJAM2_API Ajuicejam2GameModeBase : public AGameModeBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, Category="Config")
+	USoundBase* AmbianceSound;
+	
+	UPROPERTY(EditAnywhere, Category="Config")
 	TSubclassOf<UTerminalUIWidget> TerminalUIWidgetClass;
 
 	UPROPERTY(EditAnywhere, Category="Config")

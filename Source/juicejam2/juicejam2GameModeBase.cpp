@@ -4,6 +4,7 @@
 #include "juicejam2GameModeBase.h"
 
 #include "JsonObjectConverter.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 Ajuicejam2GameModeBase::Ajuicejam2GameModeBase()
@@ -48,6 +49,11 @@ void Ajuicejam2GameModeBase::OnPromptEnd(int32 InstanceID)
 
 void Ajuicejam2GameModeBase::BeginPlay()
 {
+	if(AmbianceSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), AmbianceSound, 1.f, 1.f, 0.f);
+	}
+	
 	if(TerminalUIWidgetClass)
 	{
 		UTerminalUIWidget* TerminalUIWidgetLocal = CreateWidget<UTerminalUIWidget>(GetWorld(), TerminalUIWidgetClass);

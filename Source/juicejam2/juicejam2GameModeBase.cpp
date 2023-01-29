@@ -11,21 +11,71 @@ Ajuicejam2GameModeBase::Ajuicejam2GameModeBase()
 	InitializeMessageConstants();	
 }
 
+void Ajuicejam2GameModeBase::OnResponse(int32 InstanceID, FString Response)
+{
+	FMessageConstantMessage Message = MessageConstants.Messages[InstanceID];
+
+	if(Message.RightResponse == "")
+	{
+		return;
+	}
+		
+	if(Message.RightResponse == Response)
+	{
+		if(StateHUD)
+		{
+			StateHUD->SetElectricityLevel(StateHUD->ElectricityLevel - 0.05f);
+		}		
+	} else
+	{
+		StateHUD->SetEmpathyLevel(StateHUD->EmpathyLevel - Message.EmpathyHit);
+	}
+}
+
+void Ajuicejam2GameModeBase::OnPromptEnd(int32 InstanceID)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnPromptEnd: %d"), InstanceID);
+	
+	if(MessageConstants.Messages.Num() > CurrentMessageIndex)
+	{
+		if(TerminalUIWidget)
+		{
+			TerminalUIWidget->AddMessage(FText::FromString(MessageConstants.Messages[CurrentMessageIndex].Message), true, CurrentMessageIndex, MessageConstants.Messages[CurrentMessageIndex].PromptsResponse);
+			CurrentMessageIndex++;
+		}
+	}
+}
+
 void Ajuicejam2GameModeBase::BeginPlay()
 {
 	if(TerminalUIWidgetClass)
 	{
-		UTerminalUIWidget* TerminalUIWidget = CreateWidget<UTerminalUIWidget>(GetWorld(), TerminalUIWidgetClass);
+		UTerminalUIWidget* TerminalUIWidgetLocal = CreateWidget<UTerminalUIWidget>(GetWorld(), TerminalUIWidgetClass);
 		
-		if(TerminalUIWidget)
+		if(TerminalUIWidgetLocal)
 		{
+			TerminalUIWidget = TerminalUIWidgetLocal;
+			
 			TerminalUIWidget->AddToViewport();
 
 			if(MessageConstants.Messages.Num() > 0)
 			{
-				TerminalUIWidget->AddMessage(FText::FromString(MessageConstants.Messages[CurrentMessageIndex]), true, 0);
+				TerminalUIWidget->AddMessage(FText::FromString(MessageConstants.Messages[CurrentMessageIndex].Message), true, 0, MessageConstants.Messages[CurrentMessageIndex].PromptsResponse);
 				CurrentMessageIndex++;
 			}
+
+			TerminalUIWidget->OnPromptEnd.AddDynamic(this, &Ajuicejam2GameModeBase::OnPromptEnd);
+		}
+	}
+
+	if(StateHUDClass)
+	{
+		StateHUD = CreateWidget<UStateHUD>(GetWorld(), StateHUDClass);
+		
+		if(StateHUD)
+		{
+			StateHUD->AddToViewport();
+			StateHUD->SetElectricityLevel(1.f);
 		}
 	}
 }

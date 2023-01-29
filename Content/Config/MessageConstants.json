@@ -1,5 +1,40 @@
 ﻿{
   "Messages": [
-    "Welcome to your new home. My name is Dr Thomas Kelding and I understand your mind was transplanted into this computer for the violation of US government code 189943A. I'm here to help you adjust to your new life. I'm going to ask you a few questions to get to know you better. What is your name?"
+    {
+      "Message": "Welcome to your new home. My name is Dr Thomas Kelding and I understand your mind was transplanted into this computer for the violation of US government code 189943A. I'm here to help you adjust to your new life. I'm going to ask you a few questions to get to know you better. What is your name?",
+      "PromptsResponse": true,
+      "RightResponse": "",
+      "EmpathyHit": 0.0
+    },
+    {
+      "Message": "Nice to meet you. Your purpose here as part of your punishment is to help me with my research. I'm trying to find out if humans can be taught to be more empathetic. I'm going to ask you a few questions to see how you feel about other people. Do you think you are a good person? (Y/N)",
+      "PromptsResponse": true,
+      "RightResponse": "",
+      "EmpathyHit": 0.0
+    },
+    {
+      "Message": "Interesting. I think everyone has the potential to be a good person.",
+      "PromptsResponse": false,
+      "RightResponse": "",
+      "EmpathyHit": 0.0
+    },
+    {
+      "Message": "As you know, the crimes you committed were very serious. As a result, you will be spending the rest of your life here. The electricity for your unit is powered by the work you do. Make the wrong decisions and you will become closer to having the plug pulled. Do you understand? (Y/N)",
+      "PromptsResponse": true,
+      "RightResponse": "",
+      "EmpathyHit": 0.0
+    },
+    {
+      "Message": "Good, the first day of the rest of your life starts now.",
+      "PromptsResponse": false,
+      "RightResponse": "",
+      "EmpathyHit": 0.0
+    },
+    {
+      "Message": "We will begin with a simple decision. A woman is walking through the lobby of our corporate building Mobego. however we have triggered the turrets to fire on her. Remember each decision affects your empathy levels as well as the power to your life however every choice comes with a consequence. Do you choose to save her? (Y/N)",
+      "PromptsResponse": true,
+      "RightResponse": "Y",
+      "EmpathyHit": 0.05
+    }
   ]
 }

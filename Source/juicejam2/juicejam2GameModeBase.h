@@ -3,9 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StateHUD.h"
 #include "TerminalUIWidget.h"
 #include "GameFramework/GameModeBase.h"
 #include "juicejam2GameModeBase.generated.h"
+
+USTRUCT()
+struct FMessageConstantMessage
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	FString Message;
+
+	UPROPERTY()
+	bool PromptsResponse;
+
+	UPROPERTY()
+	FString RightResponse;
+
+	UPROPERTY()
+	float EmpathyHit;
+};
 
 USTRUCT()
 struct FMessageConstants
@@ -13,7 +32,7 @@ struct FMessageConstants
 	GENERATED_USTRUCT_BODY()
 	
 	UPROPERTY()
-	TArray<FString> Messages;
+	TArray<FMessageConstantMessage> Messages;
 };
 
 UCLASS()
@@ -24,12 +43,26 @@ public:
 	UPROPERTY(EditAnywhere, Category="Config")
 	TSubclassOf<UTerminalUIWidget> TerminalUIWidgetClass;
 
+	UPROPERTY(EditAnywhere, Category="Config")
+	TSubclassOf<UStateHUD> StateHUDClass;
+
 	virtual void BeginPlay() override;
 
 	Ajuicejam2GameModeBase();
 
+	void OnResponse(int32 InstanceID, FString Response);
+
 protected:
+	UPROPERTY()
+	UTerminalUIWidget* TerminalUIWidget;
+
+	UPROPERTY()
+	UStateHUD* StateHUD;
+	
 	FMessageConstants MessageConstants;
+
+	UFUNCTION()
+	void OnPromptEnd(int32 InstanceID);
 
 	int32 CurrentMessageIndex = 0;
 	

@@ -31,7 +31,19 @@
       "EmpathyHit": 0.0
     },
     {
-      "Message": "We will begin with a simple decision. A woman is walking through the lobby of our corporate building Mobego. however we have triggered the turrets to fire on her. Remember each decision affects your empathy levels as well as the power to your life however every choice comes with a consequence. Do you choose to save her? (Y/N)",
+      "Message": "We will begin with a simple decision. A woman is walking through the lobby of our corporate building Mobego. However, we have triggered the turrets to fire on her. Remember each decision affects your empathy levels as well as the power to your life. With this said also remember that every choice comes with a consequence. Do you choose to save her? (Y/N)",
+      "PromptsResponse": true,
+      "RightResponse": "Y",
+      "EmpathyHit": 0.05
+    },
+    {
+      "Message": "Interesting. I think you are ready to show us what you got. Remember we will be watching. One last thing, now that you are starting the real test we will be giving you 10 seconds to make every decision. If you fail to respond within 10 seconds we will assume you are not ready and we will pull the plug.",
+      "PromptsResponse": false,
+      "RightResponse": "",
+      "EmpathyHit": 0.0
+    },
+    {
+      "Message": "We have a high priority target tracked to an elevator in Dubai. He is the former CEO of Mobego and is threatning to leak our secrets. We have given you access, all you need to do is activate the remote bomb we placed in the elevator. Do you choose to activate the bomb? (Y/N)",
       "PromptsResponse": true,
       "RightResponse": "Y",
       "EmpathyHit": 0.05

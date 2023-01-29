@@ -51,7 +51,8 @@ public:
 	Ajuicejam2GameModeBase();
 
 	void OnResponse(int32 InstanceID, FString Response);
-
+private:
+	const int32 LastTutorialMessageIdx = 6;
 protected:
 	UPROPERTY()
 	UTerminalUIWidget* TerminalUIWidget;

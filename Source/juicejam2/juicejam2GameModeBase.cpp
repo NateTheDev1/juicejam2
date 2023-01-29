@@ -40,7 +40,7 @@ void Ajuicejam2GameModeBase::OnPromptEnd(int32 InstanceID)
 	{
 		if(TerminalUIWidget)
 		{
-			TerminalUIWidget->AddMessage(FText::FromString(MessageConstants.Messages[CurrentMessageIndex].Message), true, CurrentMessageIndex, MessageConstants.Messages[CurrentMessageIndex].PromptsResponse);
+			TerminalUIWidget->AddMessage(FText::FromString(MessageConstants.Messages[CurrentMessageIndex].Message), true, CurrentMessageIndex, MessageConstants.Messages[CurrentMessageIndex].PromptsResponse, false, CurrentMessageIndex > LastTutorialMessageIdx);
 			CurrentMessageIndex++;
 		}
 	}

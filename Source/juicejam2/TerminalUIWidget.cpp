@@ -3,24 +3,55 @@
 
 #include "TerminalUIWidget.h"
 
+#include "juicejam2GameModeBase.h"
 #include "PlayerPawn.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/ScrollBoxSlot.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetStringLibrary.h"
 
 void UTerminalUIWidget::OnPromptComplete(FString InputString)
 {
 	bIsWaitingForPromptResponse = false;
 	
-	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	
 	InputText->SetText(FText::FromString(""));
+
+	Ajuicejam2GameModeBase* GameMode = Cast<Ajuicejam2GameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if(GameMode)
+	{
+		GameMode->OnResponse(PromptCallbackInstanceID, InputString);
+	}
+
+	if(bUseCountdown)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
+
+		TArray<UUserWidget*> WidgetSearch;
 	
+		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetWorld(), WidgetSearch, UStateHUD::StaticClass(), false);
+
+		UStateHUD* Widget = nullptr;
+	
+		if(WidgetSearch.Num() > 0)
+		{
+			Widget = Cast<UStateHUD>(WidgetSearch[0]);
+		}
+
+		if(Widget)
+		{
+			Widget->ToggleTimerVisibility();
+		}
+	}
+
 	AddMessage( FText::FromString("Your Response: " + InputString), false, -1, false);
 }
 
-void UTerminalUIWidget::AddMessage(const FText& Message, bool bCallbackUsePrompt, int32 CallbackInstanceID, bool bRequiresReponseFromPrompt, bool bIsResponsePrint)
+void UTerminalUIWidget::AddMessage(const FText& Message, bool bCallbackUsePrompt, int32 CallbackInstanceID, bool bRequiresReponseFromPrompt, bool bIsResponsePrint, bool bUseCountdownInPrompt)
 {
+	CountdownTime = 10.f;
+	bUseCountdown = bUseCountdownInPrompt;
 	bIsResponsePrinted = bIsResponsePrint;
 	
 	UE_LOG(LogTemp, Warning, TEXT("AddMessage %s"), *Message.ToString());
@@ -55,8 +86,21 @@ void UTerminalUIWidget::AddMessage(const FText& Message, bool bCallbackUsePrompt
 	}
 
 	// Every child is formatted by the name TextBlock_# sort it and then add
-	NewChildren.Sort([](const UWidget& A, const UWidget& B) {
-		return A.GetName() > B.GetName();
+	NewChildren.Sort([](const UWidget& A, const UWidget& B)
+	{
+		TArray<FString> AParts;
+		int32 ANum = 0;
+
+		TArray<FString> BParts;
+		int32 BNum = 0;
+
+		A.GetName().ParseIntoArray(AParts, TEXT("_"), true);
+		B.GetName().ParseIntoArray(BParts, TEXT("_"), true);
+
+		ANum = FCString::Atoi(*AParts[1]);
+		BNum = FCString::Atoi(*BParts[1]);
+
+		return ANum > BNum;
 	});
 	
 	MessageBox->ClearChildren();
@@ -98,6 +142,28 @@ void UTerminalUIWidget::PromptResponse(int32 InstanceID)
 
 		if(PlayerPawn)
 		{
+			if(bUseCountdown)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Timer Starting From Prompt Response"));
+				TArray<UUserWidget*> WidgetSearch;
+	
+				UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetWorld(), WidgetSearch, UStateHUD::StaticClass(), false);
+
+				UStateHUD* Widget = nullptr;
+	
+				if(WidgetSearch.Num() > 0)
+				{
+					Widget = Cast<UStateHUD>(WidgetSearch[0]);
+				}
+
+				if(Widget)
+				{
+					Widget->ToggleTimerVisibility();
+				}
+				
+				GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UTerminalUIWidget::OnCountdownTimer, 1.0f, true);
+			}
+			
 			PlayerPawn->EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 		}
 	} else
@@ -164,5 +230,33 @@ void UTerminalUIWidget::DisplayNextLetter()
 		{
 			PromptResponse(PromptCallbackInstanceID);
 		}
+	}
+}
+
+void UTerminalUIWidget::OnCountdownTimer()
+{
+	--CountdownTime;
+
+	TArray<UUserWidget*> WidgetSearch;
+	
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetWorld(), WidgetSearch, UStateHUD::StaticClass(), false);
+
+	UStateHUD* Widget = nullptr;
+	
+	if(WidgetSearch.Num() > 0)
+	{
+		Widget = Cast<UStateHUD>(WidgetSearch[0]);
+	}
+
+	if(Widget)
+	{
+		Widget->SetTimerTime(CountdownTime);
+	}
+	
+	if (CountdownTime <= 0)	
+	{
+		Widget->ToggleTimerVisibility();
+		UE_LOG(LogTemp, Warning, TEXT("GAME OVER!"));
+		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 	}
 }

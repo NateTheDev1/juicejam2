@@ -28,7 +28,7 @@ public:
 
 	void OnPromptComplete(FString InputString);
 	
-	void AddMessage(const FText& Message, bool bCallbackUsePrompt, int32 CallbackInstanceID, bool bRequiresReponseFromPrompt = false, bool bIsResponsePrint = false);
+	void AddMessage(const FText& Message, bool bCallbackUsePrompt, int32 CallbackInstanceID, bool bRequiresReponseFromPrompt = false, bool bIsResponsePrint = false, bool bUseCountdownInPrompt = false);
 
 	void PromptResponse(int32 InstanceID);
 
@@ -58,10 +58,17 @@ private:
 	bool bRequiresReponse = false;
 	bool bIsResponsePrinted = false;
 
+	bool bUseCountdown = false;
+
+	FTimerHandle CountdownTimerHandle;
+	float CountdownTime = 10.f;
+
 	int32 PromptCallbackInstanceID = 0;
 	
 	UPROPERTY()
 	UTextBlock* CurrentTextBlock;
 	
 	FTimerHandle TimerHandle;
+
+	void OnCountdownTimer();
 };

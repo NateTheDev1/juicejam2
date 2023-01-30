@@ -25,11 +25,15 @@ void Ajuicejam2GameModeBase::OnResponse(int32 InstanceID, FString Response)
 	{
 		if(StateHUD)
 		{
-			StateHUD->SetElectricityLevel(StateHUD->ElectricityLevel - 0.05f);
+			// take away power they used and remove empathy
+			StateHUD->SetEmpathyLevel(StateHUD->EmpathyLevel - Message.EmpathyHit);
+			StateHUD->SetElectricityLevel(StateHUD->ElectricityLevel - Message.BonusPower);
 		}		
 	} else
 	{
-		StateHUD->SetEmpathyLevel(StateHUD->EmpathyLevel - Message.EmpathyHit);
+		// Give them bonus power for gaining empathy and add to their empathy level
+		StateHUD->SetElectricityLevel(StateHUD->ElectricityLevel + Message.BonusPower);
+		StateHUD->SetEmpathyLevel(StateHUD->EmpathyLevel + Message.EmpathyHit);
 	}
 }
 

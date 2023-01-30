@@ -10,6 +10,7 @@ void UStateHUD::SetElectricityLevel(float NewLevel)
 	ElectricityLevel = NewLevel;
 	ElectricityBar->SetPercent(ElectricityLevel);
 
+	// TODO: Check if - value and play good/bad sound based on that instead
 	UGameplayStatics::PlaySound2D(GetWorld(), PowerDownSound, 0.5f, 1.0f, 0.0f);
 	
 	PlayAnimation(ElectricShakeAnim, 0, 5);

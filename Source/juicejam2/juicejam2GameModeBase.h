@@ -24,6 +24,9 @@ struct FMessageConstantMessage
 
 	UPROPERTY()
 	float EmpathyHit;
+
+	UPROPERTY()
+	float BonusPower;
 };
 
 USTRUCT()
